@@ -6,7 +6,7 @@ set -e
 run_backend() {
     pushd backend
     echo "Running backend..."
-    univorn main:app --host 0.0.0.0 --port 8888
+    uvicorn main:app --host 0.0.0.0 --port 8888
     popd
 }
 
