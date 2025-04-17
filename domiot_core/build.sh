@@ -14,8 +14,7 @@ build_backend() {
 
 build_frontend() {
     pushd frontend
-    echo "Building frontend..."
-    echo "Running frontend..."
+    cp ingress.conf /etc/nginx/http.d/
     popd
 }
 
