@@ -10,6 +10,10 @@ RUN apk update && apk add --no-cache python3 py3-pip build-base python3-dev ngin
 RUN mkdir -p /run/nginx
 
 COPY . /app/
+
+# Set permissions for nginx
+RUN chown -R :www-data /app
+
 RUN bash build.sh
 
 RUN chmod +x ./run.sh
