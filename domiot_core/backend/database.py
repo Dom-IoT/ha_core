@@ -24,6 +24,11 @@ class User(BaseModel):
     # We extends the HomeAssistant User class with this property
     domiot_role: UserRole = UserRole.ZERO
 
+class UserDTO(BaseModel):
+    """
+    User Data Transfer Object.
+    """
+    username: str
 
 
 def init_db():

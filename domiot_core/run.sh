@@ -1,16 +1,8 @@
 #!/usr/bin/with-contenv bashio
-echo "SUPERVISOR_TOKEN: ${SUPERVISOR_TOKEN}"
-echo
-echo
-ls
-echo
-echo
 
+set -e
 
-echo "----------------------------------------------------------------------"
-echo
-curl -sSL -H "Authorization: Bearer $SUPERVISOR_TOKEN" http://supervisor/auth/list
-echo
-echo "----------------------------------------------------------------------"
+bashio::log.info "Starting DomIoT Core"
+echo "Starting DomIoT Core"
 
-uvicorn main:app --host 0.0.0.0 --port 8888
+cd backend && uvicorn main:app --host 0.0.0.0 --port 8888
