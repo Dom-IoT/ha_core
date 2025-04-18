@@ -44,7 +44,7 @@
                         <td>
                             <!-- Form to update the domiot role -->
                             <div class="">
-                                <select name="{{user.username}}__role" id="{{user.username}}__role" class="form-select">
+                                <select name="{{user.username}}__role" id="{{user.username}}__role" class="form-select form-select-sm">
                                     {% for role in domiot_roles %}
                                     <option value="{{ role.value }}" 
                                         {% if user.domiot_role==role.value %} selected {% endif %}>
