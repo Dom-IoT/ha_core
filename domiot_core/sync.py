@@ -52,9 +52,9 @@ def fetch_users(db_cur: Cursor) -> bool:
         else:
             db_cur.execute('''
                 UPDATE users
-                SET name=?, is_owner=?, is_active=?, local_only=?, domiot_role=?
+                SET name=?, is_owner=?, is_active=?, local_only=?
                 WHERE username=?
-            ''', (u.name, u.is_owner, u.is_active, u.local_only, u.domiot_role, u.username))
+            ''', (u.name, u.is_owner, u.is_active, u.local_only, u.username))
 
         # Commit the changes to the database
         db_cur.connection.commit()
