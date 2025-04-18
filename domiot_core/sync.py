@@ -25,7 +25,13 @@ def fetch_raw_users() -> List[dict]:
         data = json.loads(response.read().decode())
         if data['result'] != 'ok':
             raise Exception(f"Failing to fetch users: {data['result']}")
+        
 
+        # Debugging output
+        print("Fetching users from Supervisor API")
+        print(f"Total users: {len(data['data']['users'])}")
+        for user in data['data']['users']:
+            print("User:", user['username'])   
         return data['data']['users']
 
 
@@ -37,25 +43,31 @@ def fetch_users(db_cur: Cursor) -> bool:
             is_owner=user['is_owner'],
             is_active=user['is_active'],
             local_only=user['local_only'],
-            domiot_role="zero",  # Default role for all users
+            group_ids=user['group_ids'],
+            domiot_role="zero"  # Default role for all users
         )
+        
+        # Check if the user already exists in the database
+        db_cur.execute("SELECT * FROM users WHERE username = ?", (user['username'],))
+        existing_user = db_cur.fetchone()
 
-        # Create the user if it doesn't exist, update if it does
-        db_cur.execute("SELECT * FROM users WHERE username=?", (u.username,))
-        row = db_cur.fetchone()
-
-        if row is None:
-            db_cur.execute('''
-                INSERT INTO users (username, name, is_owner, is_active, local_only, domiot_role)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (u.username, u.name, u.is_owner, u.is_active, u.local_only, u.domiot_role))
+        if existing_user:
+            print(f"User {user['username']} already exists, updating...")
+            # Update all the fields of the existing user (except the domiot_role)
+            db_cur.execute(
+                "UPDATE users SET name = ?, is_owner = ?, is_active = ?, local_only = ? WHERE username = ?",
+                (user['name'], user['is_owner'], user['is_active'], user['local_only'], user['username'])
+            )
+        
         else:
-            db_cur.execute('''
-                UPDATE users
-                SET name=?, is_owner=?, is_active=?, local_only=?
-                WHERE username=?
-            ''', (u.name, u.is_owner, u.is_active, u.local_only, u.username))
+            print(f"User {user['username']} does not exist, creating...")
+            # Insert the new user into the database with the default domiot_role
+            # Note: The domiot_role is set to "zero" by default
+            db_cur.execute(
+                "INSERT INTO users (username, name, is_owner, is_active, local_only,  domiot_role) VALUES (?, ?, ?, ?, ?, ?)",
+                (user['username'], user['name'], user['is_owner'], user['is_active'], user['local_only'], "zero")
+            )
 
-        # Commit the changes to the database
-        db_cur.connection.commit()
-        return True
+    # Commit the changes to the database
+    db_cur.connection.commit()
+    return True
