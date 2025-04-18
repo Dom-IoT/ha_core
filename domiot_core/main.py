@@ -12,7 +12,7 @@ from fastapi.responses import RedirectResponse
 
 init_db()
 
-con = sqlite3.connect("db.sqlite3", check_same_thread=False)
+con = sqlite3.connect("/data/db.sqlite3", check_same_thread=False)
 cur = con.cursor()
 
 app = FastAPI()

@@ -45,10 +45,10 @@ class UserDTO(BaseModel):
 
 
 def init_db():
-    if os.path.exists("db.sqlite3"):
+    if os.path.exists("/data/db.sqlite3"):
         return
-    open("db.sqlite3", "w").close()
-    conn = sqlite3.connect("db.sqlite3")
+    open("/data/db.sqlite3", "w").close()
+    conn = sqlite3.connect("/data/db.sqlite3")
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
