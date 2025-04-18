@@ -23,6 +23,9 @@ class User(BaseModel):
     group_ids: Optional[list[str]] = None
     # We extend the HomeAssistant User class with this property
     domiot_role: UserRole = UserRole.ZERO
+
+    class Config:
+        use_enum_values = True
     
 
 class UserDTO(BaseModel):

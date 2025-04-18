@@ -37,6 +37,7 @@ async def hello(request: Request):
         users.append(user)
     
     context = {
+        "user": request.headers.get("X-Remote-User-Display-Name"),
         "users": users
     }
     return templates.TemplateResponse(request, "index.html", context=context)
