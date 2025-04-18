@@ -10,6 +10,15 @@ class UserRole(str, Enum):
     PATIENT = "patient"
     ZERO = "zero" # Default role for all users
 
+    # make as a list
+    @classmethod
+    def list(cls):
+        return [role.value for role in cls]
+    
+    @classmethod
+    def __listmembers__(cls):
+        return cls.list()
+
 
 class User(BaseModel):
     """
