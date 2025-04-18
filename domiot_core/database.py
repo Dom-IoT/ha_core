@@ -21,8 +21,9 @@ class User(BaseModel):
     is_active: bool
     local_only: bool
     group_ids: Optional[list[str]] = None
-    # We extends the HomeAssistant User class with this property
+    # We extend the HomeAssistant User class with this property
     domiot_role: UserRole = UserRole.ZERO
+    
 
 class UserDTO(BaseModel):
     """

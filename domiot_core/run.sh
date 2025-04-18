@@ -3,19 +3,4 @@
 set -e
 
 # Run uvicorn for backend and nginx for frontend
-run_backend() {
-    pushd backend
-    echo "Running backend..."
-    uvicorn main:app --host 0.0.0.0 --port 8888
-    popd
-}
-
-run_frontend() {
-    pushd frontend
-    echo "Running frontend..."
-    # redirect nginx logs to stdout
-    nginx -g 'daemon off; error_log /dev/stdout debug;'
-    popd
-}
-# Run both backend and frontend in the background
-run_backend & run_frontend & wait
+uvicorn main:app --host 0.0.0.0 --port 8099 --log-level debug
