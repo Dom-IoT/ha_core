@@ -36,37 +36,39 @@ def fetch_raw_users() -> List[dict]:
 
 
 def fetch_users(db_cur: Cursor) -> bool:
-    for user in fetch_raw_users():
-        u = User(
-            username=user['username'],
-            name=user['name'],
-            is_owner=user['is_owner'],
-            is_active=user['is_active'],
-            local_only=user['local_only'],
-            group_ids=user['group_ids'],
-            domiot_role="zero"  # Default role for all users
-        )
-        
-        # Check if the user already exists in the database
+    # Fetch all existing usernames from the database
+    db_cur.execute("SELECT username FROM users")
+    existing_usernames = {row[0] for row in db_cur.fetchall()}
+
+    # Fetch the latest users from the external source
+    fetched_users = fetch_raw_users()
+    fetched_usernames = {user['username'] for user in fetched_users}
+
+    # Add or update users in the database
+    for user in fetched_users:
         db_cur.execute("SELECT * FROM users WHERE username = ?", (user['username'],))
         existing_user = db_cur.fetchone()
 
         if existing_user:
             print(f"User {user['username']} already exists, updating...")
-            # Update all the fields of the existing user (except the domiot_role)
+            # Update all fields of the existing user (except the domiot_role)
             db_cur.execute(
                 "UPDATE users SET name = ?, is_owner = ?, is_active = ?, local_only = ? WHERE username = ?",
                 (user['name'], user['is_owner'], user['is_active'], user['local_only'], user['username'])
             )
-        
         else:
             print(f"User {user['username']} does not exist, creating...")
             # Insert the new user into the database with the default domiot_role
-            # Note: The domiot_role is set to "zero" by default
             db_cur.execute(
-                "INSERT INTO users (username, name, is_owner, is_active, local_only,  domiot_role) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO users (username, name, is_owner, is_active, local_only, domiot_role) VALUES (?, ?, ?, ?, ?, ?)",
                 (user['username'], user['name'], user['is_owner'], user['is_active'], user['local_only'], "zero")
             )
+
+    # Remove users from the database who no longer exist in the fetched data
+    users_to_remove = existing_usernames - fetched_usernames
+    for username in users_to_remove:
+        print(f"User {username} no longer exists, removing...")
+        db_cur.execute("DELETE FROM users WHERE username = ?", (username,))
 
     # Commit the changes to the database
     db_cur.connection.commit()
