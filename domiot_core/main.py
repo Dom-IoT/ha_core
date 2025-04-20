@@ -16,7 +16,6 @@ con = sqlite3.connect("/data/db.sqlite3", check_same_thread=False)
 cur = con.cursor()
 
 app = FastAPI()
-app.mount('/static', StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
