@@ -18,8 +18,3 @@ ingress: true
 hassio_role: admin
 hassio_api: true
 homeassistant_api: true
-
-options:
-  refresh_every_sec: 60
-schema:
-  refresh_every_sec: int
